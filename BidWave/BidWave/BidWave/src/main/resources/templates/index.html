@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to BidWave</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --black: #0A0908;
+            --dark-blue: #22333B;
+            --off-white: #EAE0D5;
+            --tan: #C6AC8E;
+            --taupe: #5E503F;
+            --heading-font: 'Yuji Syuku', serif;
+            --body-font: 'Lato', sans-serif;
+        }
+
+        body {
+            font-family: var(--body-font);
+            background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%);
+            color: #374151;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em 2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: none;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-links a, .user-actions a {
+            margin: 0 1em;
+            font-size: 1.1em;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after,
+        .user-actions a:not(.nav-button)::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ffffff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:not(.logo):hover::after,
+        .user-actions a:not(.nav-button):hover::after {
+            width: 100%;
+        }
+
+        .nav-links .logo {
+            font-family: var(--heading-font);
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .nav-links .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #8B5CF6 0%, #4F46E5 100%);
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+            background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
+            text-decoration: none;
+        }
+
+        a {
+            color: var(--taupe);
+            text-decoration: none;
+        }
+
+        /* Hero Section */
+        .hero-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6em 2em;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: left;
+            gap: 4em;
+        }
+
+        .hero-content {
+            flex: 1;
+            animation: slideInLeft 1s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-title {
+            font-family: var(--heading-font);
+            font-size: 5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            margin-bottom: 0.4em;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-paragraph {
+            font-size: 1.3em;
+            color: #6b7280;
+            max-width: 550px;
+            margin-bottom: 2.5em;
+            line-height: 1.6;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        .hero-button {
+            font-family: var(--body-font);
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            display: inline-block;
+            animation: fadeInUp 1s ease-out 0.7s both;
+        }
+
+        .hero-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            text-decoration: none;
+        }
+
+        .hero-graphic {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: slideInRight 1s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-graphic svg {
+            max-width: 500px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .hero-graphic svg path {
+            fill: url(#gradient);
+            animation: morphShape 8s ease-in-out infinite;
+        }
+
+        @keyframes morphShape {
+            0%, 100% {
+                d: path("M48.2,-64.9C61.8,-53,72.6,-36.8,78.2,-19.1C83.8,-1.4,84.1,17.9,76.1,32.7C68.1,47.5,51.8,57.8,35.8,65.8C19.8,73.8,4.1,79.5,-12.3,79.5C-28.7,79.5,-45.8,73.8,-57.4,62.7C-69,51.6,-75.1,35,-76.3,18.3C-77.5,1.7,-73.8,-15,-65.4,-29.4C-57,-43.8,-43.9,-55.9,-30,-66.6C-16.1,-77.3,-1.4,-86.7,13.6,-83.4C28.6,-80.1,48.2,-64.9,48.2,-64.9Z");
+            }
+            50% {
+                d: path("M42.8,-58.9C55.2,-48.1,64.8,-33.5,69.3,-17.2C73.8,-0.9,73.2,17.1,65.8,31.6C58.4,46.1,44.2,57.1,28.5,63.8C12.8,70.5,-4.4,72.9,-20.8,68.8C-37.2,64.7,-52.8,54.1,-62.4,39.4C-72,24.7,-75.6,5.9,-73.2,-11.9C-70.8,-29.7,-62.4,-46.5,-49.8,-57.2C-37.2,-67.9,-20.4,-72.5,-3.9,-67.6C12.6,-62.7,30.4,-69.7,42.8,-58.9Z");
+            }
+        }
+
+        /* Success Message Styles - ONLY NEW ADDITION */
+        .success-message {
+            padding: 1.2em;
+            margin: 1.5em auto;
+            border-radius: 12px;
+            border: 2px solid #22c55e;
+            animation: slideDown 0.5s ease-out;
+            font-weight: 500;
+            max-width: 600px;
+            text-align: center;
+            color: #166534;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-container {
+                flex-direction: column;
+                padding: 3em 1.5em;
+                gap: 2em;
+            }
+
+            .hero-title {
+                font-size: 3em;
+            }
+
+            .hero-paragraph {
+                font-size: 1.1em;
+            }
+
+            .hero-graphic svg {
+                max-width: 300px;
+            }
+
+            .success-message {
+                margin: 1em;
+                max-width: calc(100% - 2em);
+            }
+        }
+    </style>
+</head>
+
+<body>
+<header th:fragment="header">
+    <nav>
+        <div class="nav-links">
+            <a th:href="@{/}" class="logo">BidWave</a>
+            <a th:href="@{/auctions}">Browse Auctions</a>
+        </div>
+
+        <div class="user-actions">
+                <span sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}">Login</a>
+                    <a th:href="@{/register}" class="nav-button">Register</a>
+                </span>
+
+            <span sec:authorize="isAuthenticated()">
+                    <a th:href="@{/profile}">My Profile</a>
+                    <span sec:authorize="hasRole('SELLER')">| <a th:href="@{/auctions/new}">Create Auction</a></span>
+                    <span sec:authorize="hasRole('ADMIN')">| <a th:href="@{/admin/dashboard}">Admin Dashboard</a></span>
+                    <a th:href="@{/logout}" class="nav-button">Logout</a>
+                </span>
+        </div>
+    </nav>
+</header>
+
+<!-- Success Message Block - ONLY NEW ADDITION -->
+<div th:if="${successMessage}" class="success-message">
+    <span th:text="${successMessage}">Your account has been successfully deleted.</span>
+</div>
+
+<main class="hero-container">
+    <div class="hero-content">
+        <h1 class="hero-title">The Thrill of the Auction</h1>
+        <p class="hero-paragraph">
+            Discover, bid, and win. Your premier destination for unique items and competitive bidding in Sri Lanka.
+        </p>
+        <a th:href="@{/auctions}" class="hero-button">Explore Auctions</a>
+    </div>
+
+    <div class="hero-graphic">
+        <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.8" />
+                    <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.8" />
+                </linearGradient>
+            </defs>
+            <path fill-opacity="0.8" d="M48.2,-64.9C61.8,-53,72.6,-36.8,78.2,-19.1C83.8,-1.4,84.1,17.9,76.1,32.7C68.1,47.5,51.8,57.8,35.8,65.8C19.8,73.8,4.1,79.5,-12.3,79.5C-28.7,79.5,-45.8,73.8,-57.4,62.7C-69,51.6,-75.1,35,-76.3,18.3C-77.5,1.7,-73.8,-15,-65.4,-29.4C-57,-43.8,-43.9,-55.9,-30,-66.6C-16.1,-77.3,-1.4,-86.7,13.6,-83.4C28.6,-80.1,48.2,-64.9,48.2,-64.9Z" transform="translate(250 250)" stroke="none"></path>
+        </svg>
+    </div>
+</main>
+</body>
+</html>

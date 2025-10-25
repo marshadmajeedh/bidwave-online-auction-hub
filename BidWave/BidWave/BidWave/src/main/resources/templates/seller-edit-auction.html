@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Auction - BidWave</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --black: #0A0908;
+            --dark-blue: #22333B;
+            --off-white: #EAE0D5;
+            --tan: #C6AC8E;
+            --taupe: #5E503F;
+            --heading-font: 'Yuji Syuku', serif;
+            --body-font: 'Lato', sans-serif;
+        }
+
+        body {
+            font-family: var(--body-font);
+            background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%);
+            color: #374151;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em 2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: none;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-links a, .user-actions a {
+            margin: 0 1em;
+            font-size: 1.1em;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ffffff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:not(.logo):hover::after {
+            width: 100%;
+        }
+
+        .nav-links .logo {
+            font-family: var(--heading-font);
+            font-size: 1.8em;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #8B5CF6 0%, #4F46E5 100%);
+            color: #fff !important;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+            background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: 3em auto;
+            padding: 3em;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            animation: scaleIn 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .form-container::before {
+            content: '✏️';
+            display: block;
+            text-align: center;
+            font-size: 3.5em;
+            margin-bottom: 0.3em;
+            animation: bounceIn 1s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .form-header {
+            font-family: var(--heading-font);
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 1.5em;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auction-form div {
+            margin-bottom: 1.5em;
+            animation: slideInRight 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .auction-form div:nth-child(1) { animation-delay: 0.1s; }
+        .auction-form div:nth-child(2) { animation-delay: 0.15s; }
+        .auction-form div:nth-child(3) { animation-delay: 0.2s; }
+        .auction-form div:nth-child(4) { animation-delay: 0.25s; }
+        .auction-form div:nth-child(5) { animation-delay: 0.3s; }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .auction-form label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+            color: #374151;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+
+        .auction-form input[type="text"],
+        .auction-form input[type="number"],
+        .auction-form input[type="datetime-local"],
+        .auction-form textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            box-sizing: border-box;
+            background-color: #f9fafb;
+            font-family: var(--body-font);
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .auction-form input:focus,
+        .auction-form textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .auction-form textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .auction-form button {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.15em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            margin-top: 1em;
+            animation: slideInUp 0.6s ease-out 0.4s both;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auction-form button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .auction-form button:active {
+            transform: translateY(-1px);
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-height: 220px;
+            overflow-y: auto;
+            border: 2px solid #e5e7eb;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #f9fafb;
+            transition: all 0.3s ease;
+        }
+
+        .category-grid:hover {
+            border-color: #c7d2fe;
+            background-color: #ffffff;
+        }
+
+        .category-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .category-grid::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .category-grid::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-item:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            transform: translateX(5px);
+        }
+
+        .category-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .category-item label {
+            font-weight: normal;
+            cursor: pointer;
+            color: #4b5563;
+            transition: color 0.3s ease;
+        }
+
+        .category-item:hover label {
+            color: #4F46E5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 2em 1em;
+                padding: 2em;
+            }
+
+            .form-header {
+                font-size: 2em;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<div class="form-container">
+    <h1 class="form-header">Edit Your Auction</h1>
+
+    <form th:action="@{/seller/auctions/{id}/update(id=${auctionId})}" th:object="${auctionForm}" method="post" class="auction-form">
+        <div>
+            <label for="itemName">Item Name</label>
+            <input type="text" id="itemName" th:field="*{itemName}" required>
+        </div>
+        <div>
+            <label for="description">Description</label>
+            <textarea id="description" th:field="*{description}" rows="5" required></textarea>
+        </div>
+        <div>
+            <label for="startPrice">Starting Price ($)</label>
+            <input type="number" id="startPrice" th:field="*{startPrice}" step="0.01" required>
+        </div>
+        <div>
+            <label for="endTime">Auction End Time</label>
+            <input type="datetime-local" id="endTime" th:field="*{endTime}" required>
+        </div>
+        <div>
+            <label>Categories</label>
+            <div class="category-grid">
+                <div th:each="cat : ${categories}" class="category-item">
+                    <input type="checkbox" name="categoryIds" th:value="${cat.categoryId}" th:text="${cat.name}"
+                           th:checked="${#lists.contains(auctionForm.categoryIds, cat.categoryId)}" />
+                </div>
+            </div>
+        </div>
+        <button type="submit">Save Changes</button>
+    </form>
+</div>
+</body>
+</html>

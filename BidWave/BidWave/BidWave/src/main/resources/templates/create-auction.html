@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Create New Auction - BidWave</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --black: #0A0908;
+            --dark-blue: #22333B;
+            --off-white: #EAE0D5;
+            --tan: #C6AC8E;
+            --taupe: #5E503F;
+            --heading-font: 'Yuji Syuku', serif;
+            --body-font: 'Lato', sans-serif;
+        }
+
+        body {
+            font-family: var(--body-font);
+            background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%);
+            color: #374151;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2em 1em;
+        }
+
+        .page-container {
+            display: flex;
+            width: 100%;
+            max-width: 1100px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .decorative-panel {
+            flex-basis: 40%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 3em;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .decorative-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotateBg 20s linear infinite;
+        }
+
+        @keyframes rotateBg {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .decorative-panel h1 {
+            font-family: var(--heading-font);
+            font-size: 3em;
+            line-height: 1.2;
+            margin: 0 0 0.5em 0;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+            animation: fadeInLeft 1s ease-out;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .decorative-panel p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.9);
+            position: relative;
+            z-index: 1;
+            animation: fadeInLeft 1s ease-out 0.2s both;
+        }
+
+        .form-container {
+            flex-basis: 60%;
+            padding: 3em;
+            overflow-y: auto;
+            max-height: 90vh;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .form-header {
+            font-family: var(--heading-font);
+            font-size: 2.2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .form-subheader {
+            color: #6b7280;
+            margin-top: 0.5em;
+            margin-bottom: 2em;
+            font-size: 1.05em;
+        }
+
+        .auction-form div {
+            margin-bottom: 1.5em;
+            animation: slideInRight 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .auction-form div:nth-child(1) { animation-delay: 0.1s; }
+        .auction-form div:nth-child(2) { animation-delay: 0.15s; }
+        .auction-form div:nth-child(3) { animation-delay: 0.2s; }
+        .auction-form div:nth-child(4) { animation-delay: 0.25s; }
+        .auction-form div:nth-child(5) { animation-delay: 0.3s; }
+        .auction-form div:nth-child(6) { animation-delay: 0.35s; }
+        .auction-form div:nth-child(7) { animation-delay: 0.4s; }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .auction-form label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+            color: #374151;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+
+        .auction-form input[type="text"],
+        .auction-form input[type="number"],
+        .auction-form input[type="datetime-local"],
+        .auction-form textarea,
+        .auction-form input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            box-sizing: border-box;
+            background-color: #f9fafb;
+            transition: all 0.3s ease;
+            font-family: var(--body-font);
+            font-size: 1em;
+        }
+
+        .auction-form input:focus,
+        .auction-form textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .auction-form textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .auction-form button {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            margin-top: 1em;
+        }
+
+        .auction-form button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .auction-form button:active {
+            transform: translateY(-1px);
+        }
+
+        .message {
+            padding: 1.2em;
+            margin-bottom: 1.5em;
+            border-radius: 12px;
+            border: 2px solid;
+            color: #991b1b;
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-color: #ef4444;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+            animation: shake 0.5s ease-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Category Search Input */
+        .category-search-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            box-sizing: border-box;
+            background-color: #f9fafb;
+            transition: all 0.3s ease;
+            font-family: var(--body-font);
+            font-size: 1em;
+        }
+
+        .category-search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Category Checkbox Styles */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-height: 220px;
+            overflow-y: auto;
+            border: 2px solid #e5e7eb;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #f9fafb;
+            transition: all 0.3s ease;
+        }
+
+        .category-grid:hover {
+            border-color: #c7d2fe;
+            background-color: #ffffff;
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-item:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            transform: translateX(5px);
+        }
+
+        .category-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .category-item label {
+            font-weight: normal;
+            cursor: pointer;
+            color: #4b5563;
+            transition: color 0.3s ease;
+        }
+
+        .category-item:hover label {
+            color: #4F46E5;
+        }
+
+        /* File upload styling */
+        .auction-form input[type="file"] {
+            padding: 10px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border: 2px dashed #c7d2fe;
+            cursor: pointer;
+        }
+
+        .auction-form input[type="file"]:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .auction-form input[type="file"]::file-selector-button {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .auction-form input[type="file"]::file-selector-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Custom scrollbar */
+        .category-grid::-webkit-scrollbar,
+        .form-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .category-grid::-webkit-scrollbar-track,
+        .form-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .category-grid::-webkit-scrollbar-thumb,
+        .form-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-container {
+                flex-direction: column;
+            }
+
+            .decorative-panel {
+                padding: 2em;
+            }
+
+            .decorative-panel h1 {
+                font-size: 2em;
+            }
+
+            .form-container {
+                padding: 2em;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page-container">
+    <!-- Left Decorative Panel -->
+    <div class="decorative-panel">
+        <h1>Reach Eager Buyers</h1>
+        <p>Fill out the details to list your item. A great description and clear images attract more bidders and lead to higher final prices.</p>
+    </div>
+
+    <!-- Right Form Container -->
+    <div class="form-container">
+        <h2 class="form-header">List a New Item</h2>
+        <p class="form-subheader">Fill out the details to get your auction live.</p>
+
+        <div th:if="${errorMessage}" class="message" th:text="${errorMessage}"></div>
+
+        <form th:action="@{/api/auctions}" th:object="${auctionForm}" method="post" class="auction-form" enctype="multipart/form-data">
+            <div>
+                <label for="itemName">Item Name</label>
+                <input type="text" id="itemName" th:field="*{itemName}" required placeholder="e.g., Antique Wooden Chair">
+            </div>
+            <div>
+                <label for="description">Description</label>
+                <textarea id="description" th:field="*{description}" rows="4" required placeholder="Provide a detailed description of your item..."></textarea>
+            </div>
+            <div>
+                <label for="startPrice">Starting Price ($)</label>
+                <input type="number" id="startPrice" th:field="*{startPrice}" step="0.01" required placeholder="100.00">
+            </div>
+            <div>
+                <label for="endTime">Auction End Time</label>
+                <input type="datetime-local" id="endTime" th:field="*{endTime}" required>
+            </div>
+
+            <!-- Category Search -->
+            <div>
+                <label for="categorySearch">Search Categories</label>
+                <input type="text" id="categorySearch" placeholder="Type to filter categories..." class="category-search-input">
+            </div>
+
+            <!-- Category Selection -->
+            <div>
+                <label>Categories (select one or more)</label>
+                <div class="category-grid">
+                    <div th:each="cat : ${categories}" class="category-item">
+                        <input type="checkbox" th:field="*{categoryIds}" th:value="${cat.categoryId}" th:id="${'cat-' + cat.categoryId}" />
+                        <label th:for="${'cat-' + cat.categoryId}" th:text="${cat.name}"></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Upload Field -->
+            <div>
+                <label for="imageFiles">Upload Images (select one or more)</label>
+                <input type="file" id="imageFiles" name="imageFiles" multiple required>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 1em;">Create Auction</button>
+        </form>
+    </div>
+</div>
+
+<!-- Category Search JavaScript -->
+<script>
+    document.getElementById('categorySearch').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const categoryItems = document.querySelectorAll('.category-item');
+
+        categoryItems.forEach(item => {
+            const label = item.querySelector('label');
+            const labelText = label.textContent.toLowerCase();
+
+            if (labelText.includes(searchTerm)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+</script>
+</body>
+</html>

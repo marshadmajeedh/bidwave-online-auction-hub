@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Register - BidWave</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --black: #0A0908;
+      --dark-blue: #22333B;
+      --off-white: #EAE0D5;
+      --tan: #C6AC8E;
+      --taupe: #5E503F;
+      --heading-font: 'Yuji Syuku', serif;
+      --body-font: 'Lato', sans-serif;
+    }
+
+    body {
+      font-family: var(--body-font);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+      overflow: hidden;
+      padding: 2em 1em;
+    }
+
+    /* Animated background circles */
+    body::before,
+    body::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      animation: float 20s ease-in-out infinite;
+    }
+
+    body::before {
+      width: 400px;
+      height: 400px;
+      top: -150px;
+      right: -150px;
+      animation-delay: 0s;
+    }
+
+    body::after {
+      width: 500px;
+      height: 500px;
+      bottom: -200px;
+      left: -200px;
+      animation-delay: 7s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translate(0, 0) scale(1);
+      }
+      50% {
+        transform: translate(50px, 50px) scale(1.1);
+      }
+    }
+
+    .register-container {
+      display: flex;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 1000px;
+      overflow: hidden;
+      animation: slideUp 0.8s ease-out;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Left Side with Animated Gradient */
+    .register-art {
+      flex-basis: 45%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #ffffff;
+      padding: 3em 2em;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .register-art::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: rotateBg 20s linear infinite;
+    }
+
+    @keyframes rotateBg {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .register-art h1 {
+      font-family: var(--heading-font);
+      font-size: 3em;
+      margin-bottom: 0.5em;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 1;
+      animation: fadeInLeft 1s ease-out;
+    }
+
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .register-art p {
+      font-size: 1.1em;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.95);
+      position: relative;
+      z-index: 1;
+      animation: fadeInLeft 1s ease-out 0.2s both;
+    }
+
+    .register-art::after {
+      content: '🎯';
+      display: block;
+      font-size: 5em;
+      margin-top: 0.5em;
+      position: relative;
+      z-index: 1;
+      animation: bounceIn 1.5s ease-out 0.5s both;
+    }
+
+    @keyframes bounceIn {
+      0% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+      }
+      50% {
+        transform: scale(1.2) rotate(180deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(360deg);
+      }
+    }
+
+    /* Right Side with Form */
+    .register-form-container {
+      flex-basis: 55%;
+      padding: 3em;
+      animation: fadeIn 1s ease-out 0.3s both;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .register-form-container h2 {
+      font-family: var(--heading-font);
+      font-size: 2.5em;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-top: 0;
+      margin-bottom: 1em;
+    }
+
+    .register-form div {
+      margin-bottom: 1.2em;
+      animation: slideInRight 0.6s ease-out;
+      animation-fill-mode: both;
+    }
+
+    .register-form div:nth-child(1) { animation-delay: 0.1s; }
+    .register-form div:nth-child(2) { animation-delay: 0.15s; }
+    .register-form div:nth-child(3) { animation-delay: 0.2s; }
+    .register-form div:nth-child(4) { animation-delay: 0.25s; }
+    .register-form div:nth-child(5) { animation-delay: 0.3s; }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .register-form label {
+      font-weight: bold;
+      margin-bottom: 0.5em;
+      display: block;
+      color: #374151;
+      text-transform: uppercase;
+      font-size: 0.85em;
+      letter-spacing: 0.5px;
+    }
+
+    .register-form input, .register-form select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      box-sizing: border-box;
+      font-family: var(--body-font);
+      font-size: 1em;
+      background-color: #f9fafb;
+      transition: all 0.3s ease;
+    }
+
+    .register-form input:focus, .register-form select:focus {
+      outline: none;
+      border-color: #667eea;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .register-form select {
+      cursor: pointer;
+    }
+
+    .register-form button {
+      width: 100%;
+      margin-top: 1.5em;
+      padding: 14px;
+      font-size: 1.15em;
+      font-family: var(--body-font);
+      font-weight: bold;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      animation: slideInUp 0.6s ease-out 0.4s both;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .register-form button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+
+    .register-form button:active {
+      transform: translateY(-1px);
+    }
+
+    .login-link {
+      margin-top: 2em;
+      font-size: 0.95em;
+      text-align: center;
+      animation: fadeIn 1s ease-out 0.5s both;
+    }
+
+    .login-link p {
+      color: #6b7280;
+    }
+
+    .login-link a {
+      color: #667eea;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .login-link a:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    /* Error Message */
+    .error-message {
+      padding: 1.2em;
+      margin-bottom: 1.5em;
+      border-radius: 12px;
+      border: 2px solid #ef4444;
+      color: #991b1b;
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+      animation: shake 0.5s ease-out;
+    }
+
+    @keyframes shake {
+      0%, 100% {
+        transform: translateX(0);
+      }
+      25% {
+        transform: translateX(-10px);
+      }
+      75% {
+        transform: translateX(10px);
+      }
+    }
+
+    .error-message p {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .register-container {
+        flex-direction: column;
+      }
+
+      .register-art {
+        padding: 2em;
+      }
+
+      .register-art h1 {
+        font-size: 2em;
+      }
+
+      .register-form-container {
+        padding: 2em;
+      }
+
+      .register-form-container h2 {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="register-container">
+  <!-- Left Animated Panel -->
+  <div class="register-art">
+    <h1>Join BidWave</h1>
+    <p>Step into a world of exclusive auctions. Register now to start bidding, selling, and discovering unique items today.</p>
+  </div>
+
+  <!-- Right Form Panel -->
+  <div class="register-form-container">
+    <h2>Create Your Account</h2>
+
+    <div th:if="${errorMessage}" class="error-message">
+      <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form th:action="@{/api/auth/register}" th:object="${user}" method="post" class="register-form">
+      <div>
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" th:field="*{firstName}" required>
+      </div>
+      <div>
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" th:field="*{lastName}" required>
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" th:field="*{email}" required>
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" th:field="*{password}" required>
+      </div>
+      <div>
+        <label for="role">Register as</label>
+        <select id="role" th:field="*{role}">
+          <option value="BUYER">Buyer</option>
+          <option value="SELLER">Seller</option>
+        </select>
+      </div>
+      <button type="submit">Create Account</button>
+    </form>
+    <div class="login-link">
+      <p>Already have an account? <a th:href="@{/login}">Log in here</a></p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

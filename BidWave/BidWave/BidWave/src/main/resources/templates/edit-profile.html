@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile - BidWave</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --black: #0A0908;
+            --dark-blue: #22333B;
+            --off-white: #EAE0D5;
+            --tan: #C6AC8E;
+            --taupe: #5E503F;
+            --heading-font: 'Yuji Syuku', serif;
+            --body-font: 'Lato', sans-serif;
+        }
+
+        body {
+            font-family: var(--body-font);
+            background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%);
+            color: #374151;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em 2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: none;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-links a, .user-actions a {
+            margin: 0 1em;
+            font-size: 1.1em;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ffffff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links .logo {
+            font-family: var(--heading-font);
+            font-size: 1.8em;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #8B5CF6 0%, #4F46E5 100%);
+            color: #fff !important;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+            background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 3em auto;
+            padding: 3em;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            animation: scaleIn 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .form-header {
+            font-family: var(--heading-font);
+            font-size: 2.8em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 0.3em;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-container::before {
+            content: '👤';
+            display: block;
+            text-align: center;
+            font-size: 4em;
+            margin-bottom: 0.3em;
+            animation: bounceIn 1s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .edit-form div {
+            margin-bottom: 1.5em;
+            animation: slideInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .edit-form div:nth-child(1) {
+            animation-delay: 0.3s;
+        }
+
+        .edit-form div:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .edit-form label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+            color: #374151;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+
+        .edit-form input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            box-sizing: border-box;
+            background-color: #f9fafb;
+            font-family: var(--body-font);
+            font-size: 1.05em;
+            transition: all 0.3s ease;
+        }
+
+        .edit-form input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .edit-form button {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.15em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            margin-top: 1em;
+            animation: slideInUp 0.6s ease-out 0.5s both;
+        }
+
+        .edit-form button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .edit-form button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Success animation */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .edit-form button:focus {
+            animation: pulse 0.5s ease-out;
+        }
+
+        /* Subtle background pattern */
+        .form-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(102, 126, 234, 0.02) 100%);
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        /* Input icons */
+        .edit-form div {
+            position: relative;
+        }
+
+        .edit-form div::before {
+            content: '✏️';
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            font-size: 1.2em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .edit-form input[type="text"]:focus + div::before,
+        .edit-form div:has(input:focus)::before {
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 2em 1em;
+                padding: 2em;
+            }
+
+            .form-header {
+                font-size: 2.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<div class="form-container">
+    <h1 class="form-header">Edit Your Profile</h1>
+
+    <form th:action="@{/users/profile/update}" th:object="${updateRequest}" method="post" class="edit-form">
+        <div>
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" th:field="*{firstName}" required>
+        </div>
+        <div>
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" th:field="*{lastName}" required>
+        </div>
+        <button type="submit">Save Changes</button>
+    </form>
+</div>
+</body>
+</html>

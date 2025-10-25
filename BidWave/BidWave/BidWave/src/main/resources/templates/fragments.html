@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:fragment="head(title)">
+    <meta charset="UTF-8" />
+    <title th:text="${title} + ' - BidWave'">BidWave</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+
+    <!-- WebSocket Libraries for Real-Time Updates -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+
+<body>
+<header th:fragment="header">
+    <style>
+        :root {
+            --black: #0A0908;
+            --dark-blue: #22333B;
+            --off-white: #EAE0D5;
+            --tan: #C6AC8E;
+            --taupe: #5E503F;
+            --danger: #ef4444;
+            --success: #10b981;
+            --heading-font: 'Yuji Syuku', serif;
+        }
+
+        header nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 28px;
+            gap: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: none;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--heading-font);
+            font-size: 1.6rem;
+            color: #ffffff;
+            text-decoration: none;
+            letter-spacing: .6px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a:not(.logo)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ffffff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:not(.logo):hover::after {
+            width: 100%;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .user-actions > span {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: nowrap;
+        }
+
+        .user-actions a {
+            color: #ffffff;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+            white-space: nowrap;
+        }
+
+        .user-actions a:not(.nav-button)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ffffff;
+            transition: width 0.3s ease;
+        }
+
+        .user-actions a:not(.nav-button):hover::after {
+            width: 100%;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #8B5CF6 0%, #4F46E5 100%);
+            color: #fff !important;
+            border-radius: 25px;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+            background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
+        }
+
+        .nav-button::after {
+            display: none;
+        }
+
+        .notification-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        #notification-bell {
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        #notification-bell:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+
+        #bell-icon {
+            width: 22px;
+            height: 22px;
+            fill: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        #bell-icon.unread {
+            fill: #fecaca;
+            animation: bellRing 1s ease-in-out infinite;
+        }
+
+        @keyframes bellRing {
+            0%, 100% { transform: rotate(0deg); }
+            10%, 30% { transform: rotate(-10deg); }
+            20%, 40% { transform: rotate(10deg); }
+            50% { transform: rotate(0deg); }
+        }
+
+        #notification-count {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            min-width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #fff;
+            border-radius: 999px;
+            padding: 0 6px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        #notification-panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 380px;
+            max-height: 440px;
+            background: #fff;
+            border-radius: 12px;
+            border: 2px solid #e0e7ff;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25);
+            overflow: hidden;
+            display: none;
+            z-index: 2000;
+            animation: panelFadeIn 0.3s ease-out;
+        }
+
+        @keyframes panelFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #notification-panel .panel-header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 12px 15px;
+            border-bottom: 2px solid #e0e7ff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #notification-panel .panel-header h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        #notification-panel .panel-actions a {
+            color: #6b7280;
+            font-size: 0.86rem;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        #notification-panel .panel-actions a:hover {
+            color: #4F46E5;
+            text-decoration: underline;
+        }
+
+        .notification-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 370px;
+            overflow-y: auto;
+        }
+
+        .notification-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .notification-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .notification-item {
+            position: relative;
+            padding: 14px 15px;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.3s ease;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .notification-item:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, transparent 100%);
+            transform: translateX(-5px);
+        }
+
+        .notification-item.unread {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-left: 3px solid #667eea;
+        }
+
+        .notification-item p {
+            margin: 0;
+            color: #1f2937;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            padding-right: 60px;
+        }
+
+        .notification-item small {
+            display: block;
+            margin-top: 6px;
+            color: #9ca3af;
+            font-size: 0.78rem;
+        }
+
+        .notification-empty {
+            padding: 30px 18px;
+            color: #6b7280;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .notification-empty::before {
+            content: '🔔';
+            display: block;
+            font-size: 3em;
+            margin-bottom: 10px;
+            opacity: 0.3;
+        }
+
+        .notification-item-actions {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 12px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .notification-item:hover .notification-item-actions {
+            opacity: 1;
+        }
+
+        .item-action-btn {
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .item-action-btn svg {
+            width: 100%;
+            height: 100%;
+            fill: #9ca3af;
+            transition: fill 0.3s ease;
+        }
+
+        .item-action-btn:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .item-action-btn:hover svg {
+            fill: #4F46E5;
+        }
+
+        .item-action-btn.delete-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .item-action-btn.delete-btn:hover svg {
+            fill: #ef4444;
+        }
+    </style>
+
+    <nav>
+        <div class="nav-links">
+            <a th:href="@{/}" class="logo">BidWave</a>
+            <a th:href="@{/auctions}">Browse Auctions</a>
+        </div>
+        <div class="user-actions">
+            <span sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}">Login</a>
+                <a th:href="@{/register}" class="nav-button">Register</a>
+            </span>
+            <span sec:authorize="isAuthenticated()" style="display:flex; align-items:center; gap: 1rem;">
+                <div class="notification-container">
+                    <button class="notification-bell" id="notification-bell" title="Notifications">
+                        <svg class="bell-icon" id="bell-icon" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-1.707 1.707A1 1 0 003 15h14a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
+                        <span class="notification-count" id="notification-count"></span>
+                    </button>
+                    <div class="notification-panel" id="notification-panel">
+                        <div class="panel-header">
+                            <h4>Notifications</h4>
+                            <div class="panel-actions">
+                                <a href="#" id="mark-all-read">Mark all as read</a>
+                                <a href="#" id="clear-all">Clear All</a>
+                            </div>
+                        </div>
+                        <ul class="notification-list" id="notification-list"></ul>
+                    </div>
+                </div>
+                <a th:href="@{/profile}">My Profile</a>
+                <span sec:authorize="hasRole('BUYER')">| <a th:href="@{/my-bids}">My Bids</a></span>
+                <span sec:authorize="hasRole('SELLER')">| <a th:href="@{/seller/dashboard}">Monitor Auctions</a></span>
+                <span sec:authorize="hasRole('SELLER')">| <a th:href="@{/auctions/new}">Create Auction</a></span>
+                <span sec:authorize="hasRole('ADMIN')">| <a th:href="@{/admin/dashboard}">Admin Dashboard</a></span>
+                <a th:href="@{/logout}" class="nav-button">Logout</a>
+            </span>
+        </div>
+    </nav>
+
+    <div style="display: none;">
+        <svg id="icon-checkmark" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+        <svg id="icon-cross" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+    </div>
+
+    <script sec:authorize="isAuthenticated()">
+        (function() {
+            if (window.notificationScriptLoaded) return;
+            window.notificationScriptLoaded = true;
+            document.addEventListener('DOMContentLoaded', function () {
+                const bell = document.getElementById('notification-bell'), panel = document.getElementById('notification-panel'), countEl = document.getElementById('notification-count'), listEl = document.getElementById('notification-list'), markAllBtn = document.getElementById('mark-all-read'), clearAllBtn = document.getElementById('clear-all'), bellIcon = document.getElementById('bell-icon'), checkmarkTemplate = document.getElementById('icon-checkmark'), crossTemplate = document.getElementById('icon-cross');
+                if (!bell || !panel) return;
+
+                function renderList(notifications) {
+                    listEl.innerHTML = '';
+                    if (!notifications || notifications.length === 0) {
+                        listEl.innerHTML = '<li class="notification-empty">You have no notifications.</li>';
+                        return;
+                    }
+                    notifications.forEach(n => {
+                        const li = document.createElement('li');
+                        li.className = 'notification-item' + (n.read ? '' : ' unread');
+                        li.dataset.id = n.id;
+
+                        const textContent = document.createElement('div');
+                        textContent.innerHTML = `<p>${n.message}</p><small>${new Date(n.createdAt).toLocaleString()}</small>`;
+
+                        const actions = document.createElement('div');
+                        actions.className = 'notification-item-actions';
+
+                        if (!n.read) {
+                            const readBtn = document.createElement('button');
+                            readBtn.className = 'item-action-btn read-btn';
+                            readBtn.dataset.id = n.id;
+                            readBtn.title = 'Mark as read';
+                            readBtn.appendChild(checkmarkTemplate.cloneNode(true));
+                            actions.appendChild(readBtn);
+                        }
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'item-action-btn delete-btn';
+                        deleteBtn.dataset.id = n.id;
+                        deleteBtn.title = 'Delete';
+                        deleteBtn.appendChild(crossTemplate.cloneNode(true));
+                        actions.appendChild(deleteBtn);
+
+                        li.appendChild(textContent);
+                        li.appendChild(actions);
+                        listEl.appendChild(li);
+                    });
+                }
+                function updateUnreadCount() {
+                    fetch('/api/notifications/count').then(res => res.json()).then(data => {
+                        const count = data.count || 0;
+                        countEl.style.display = count > 0 ? 'flex' : 'none';
+                        countEl.textContent = count > 10 ? '10+' : count;
+                        count > 0 ? bellIcon.classList.add('unread') : bellIcon.classList.remove('unread');
+                    });
+                }
+                function fetchNotifications() { fetch('/api/notifications').then(res => res.json()).then(renderList); }
+                function markAsRead(id) { fetch(`/api/notifications/${id}/read`, { method: 'POST' }).then(() => { updateUnreadCount(); fetchNotifications(); }); }
+                function deleteNotification(id) { fetch(`/api/notifications/${id}`, { method: 'DELETE' }).then(() => { updateUnreadCount(); fetchNotifications(); }); }
+                function openPanel() { panel.style.display = 'block'; fetchNotifications(); }
+                function closePanel() { panel.style.display = 'none'; }
+
+                bell.addEventListener('click', (e) => { e.stopPropagation(); panel.style.display === 'block' ? closePanel() : openPanel(); });
+                document.addEventListener('click', (e) => { if (!panel.contains(e.target) && !bell.contains(e.target)) closePanel(); });
+                markAllBtn.addEventListener('click', (e) => { e.preventDefault(); fetch('/api/notifications/read-all', { method: 'POST' }).then(() => { updateUnreadCount(); fetchNotifications(); }); });
+                clearAllBtn.addEventListener('click', (e) => { e.preventDefault(); if (confirm('Are you sure?')) { fetch('/api/notifications/clear-all', { method: 'POST' }).then(() => { updateUnreadCount(); renderList([]); closePanel(); }); } });
+
+                listEl.addEventListener('click', function(e) {
+                    const readBtn = e.target.closest('.read-btn');
+                    if (readBtn) { e.preventDefault(); markAsRead(readBtn.dataset.id); }
+                    const deleteBtn = e.target.closest('.delete-btn');
+                    if (deleteBtn) { e.preventDefault(); deleteNotification(deleteBtn.dataset.id); }
+                });
+
+                updateUnreadCount();
+                setInterval(updateUnreadCount, 30000);
+            });
+        })();
+    </script>
+</header>
+</body>
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${auction.itemName} + ' - BidWave'">Auction Details</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --black: #0A0908;
+            --dark-blue: #22333B;
+            --off-white: #EAE0D5;
+            --tan: #C6AC8E;
+            --taupe: #5E503F;
+            --heading-font: 'Yuji Syuku', serif;
+            --body-font: 'Lato', sans-serif;
+        }
+
+        body {
+            font-family: var(--body-font);
+            background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%);
+            color: #374151;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em 2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: none;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-links a, .user-actions a {
+            margin: 0 1em;
+            font-size: 1.1em;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ffffff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links .logo {
+            font-family: var(--heading-font);
+            font-size: 1.8em;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #8B5CF6 0%, #4F46E5 100%);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+            background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
+        }
+
+        .detail-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2em;
+            max-width: 1200px;
+            margin: 2em auto;
+            padding: 2em;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            animation: scaleIn 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .image-gallery {
+            flex: 1 1 500px;
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .main-image-container {
+            width: 100%;
+            height: 450px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--heading-font);
+            font-size: 2em;
+            color: #9ca3af;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .main-image-container:hover {
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+
+        .main-image-tag {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .main-image-tag:hover {
+            transform: scale(1.05);
+        }
+
+        .auction-info {
+            flex: 1 1 500px;
+            animation: slideInRight 0.8s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .item-title {
+            font-family: var(--heading-font);
+            font-size: 3em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 0.2em 0;
+        }
+
+        .seller-info {
+            color: #6b7280;
+            margin-bottom: 1.5em;
+            font-size: 1.1em;
+        }
+
+        .seller-info span {
+            font-weight: 600;
+            color: #4F46E5;
+        }
+
+        .bidding-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border: 2px solid #e0e7ff;
+            border-radius: 12px;
+            padding: 2em;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+            }
+            50% {
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+            }
+        }
+
+        .bidding-box .price {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: priceUpdate 0.5s ease-out;
+        }
+
+        @keyframes priceUpdate {
+            from {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .bidding-box .price-label {
+            display: block;
+            margin-bottom: 0.5em;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+
+        .countdown-timer {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #dc2626;
+            margin: 1em 0;
+            text-align: center;
+            padding: 0.8em;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-radius: 8px;
+            animation: countdownPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes countdownPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        .countdown-ended {
+            color: #6b7280;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            animation: none;
+        }
+
+        .countdown-pending {
+            color: #4F46E5;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            animation: none;
+        }
+
+        .login-prompt {
+            text-align: center;
+            padding: 1.5em;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-radius: 8px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .item-description {
+            margin-top: 2em;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .item-description h3 {
+            font-family: var(--heading-font);
+            font-size: 1.5em;
+            color: #1f2937;
+            border-bottom: 2px solid #e0e7ff;
+            padding-bottom: 0.5em;
+            position: relative;
+        }
+
+        .item-description h3::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .item-description p {
+            line-height: 1.8;
+            color: #4b5563;
+        }
+
+        .bid-form label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .bid-form input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .bid-form input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .bid-form button {
+            width: 100%;
+            margin-top: 1em;
+            padding: 14px;
+            font-size: 1.1em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .bid-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .bid-form button:active {
+            transform: translateY(0);
+        }
+
+        /* Thumbnail styles */
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            animation: fadeIn 0.8s ease-out 0.3s both;
+        }
+
+        .thumbnail {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .thumbnail.active {
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transform: scale(1.05);
+        }
+
+        .thumbnail:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        #highest-bidder-name {
+            text-align: center;
+            font-style: italic;
+            min-height: 1.2em;
+            color: #4F46E5;
+            font-weight: 600;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Success message styling */
+        p[style*="color:green"] {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            padding: 1em;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2);
+        }
+
+        /* Error message styling */
+        p[style*="color:red"] {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            padding: 1em;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<main class="detail-container">
+    <div class="image-gallery">
+        <div class="main-image-container">
+            <div th:if="${not #sets.isEmpty(auction.imageUrls)}">
+                <img th:src="${#lists.toList(auction.imageUrls)[0]}" alt="Auction Image" class="main-image-tag" id="mainImage" />
+            </div>
+            <div th:unless="${not #sets.isEmpty(auction.imageUrls)}">
+                <span>No Image Available</span>
+            </div>
+        </div>
+
+        <!-- Thumbnail gallery -->
+        <div th:if="${not #sets.isEmpty(auction.imageUrls) and #lists.size(auction.imageUrls) > 1}" class="thumbnail-container">
+            <th:block th:each="imageUrl, iterStat : ${#lists.toList(auction.imageUrls)}">
+                <img th:src="${imageUrl}" alt="Thumbnail" class="thumbnail"
+                     th:classappend="${iterStat.index == 0} ? 'active'"
+                     th:onclick="'changeMainImage(\'' + ${imageUrl} + '\', this)'" />
+            </th:block>
+        </div>
+    </div>
+
+    <div class="auction-info">
+        <h1 class="item-title" th:text="${auction.itemName}">Item Name</h1>
+        <p class="seller-info">Sold by: <span th:text="${auction.sellerName}"></span></p>
+
+        <div class="bidding-box">
+            <span class="price-label" id="price-label">Starting Price</span>
+            <div class="price" id="current-bid-price" th:text="${formattedStartPrice}">$0.00</div>
+            <p id="highest-bidder-name" style="text-align:center; font-style:italic; min-height: 1.2em;"></p>
+            <div id="countdown" class="countdown-timer"></div>
+            <div id="bidding-form-container">
+                <p class="login-prompt">Please log in to see bidding options.</p>
+            </div>
+        </div>
+
+        <div class="item-description">
+            <h3>Description</h3>
+            <p th:text="${auction.description}">Item description goes here.</p>
+        </div>
+    </div>
+</main>
+
+<script th:inline="javascript">
+    const auctionId = /*[[${auction.auctionId}]]*/ null;
+    const auctionStatus = /*[[${auction.status}]]*/ 'PENDING';
+    const isAuthenticated = /*[[${#authentication != null && #authentication.isAuthenticated()}]]*/ false;
+    const isBuyer = /*[[${#authorization.expression('hasRole(''BUYER'')')}]]*/ false;
+    const isSellerViewingOwn = /*[[${sellerDetails != null}]]*/ false;
+    const formattedStartPrice = /*[[${formattedStartPrice}]]*/ '$0.00';
+    const auctionEndTime = new Date(/*[[${auctionEndTimeISO}]]*/).getTime();
+
+    const countdownElement = document.getElementById('countdown');
+    const priceElement = document.getElementById('current-bid-price');
+    const bidderNameElement = document.getElementById('highest-bidder-name');
+    const formContainer = document.getElementById('bidding-form-container');
+    const priceLabelElement = document.getElementById('price-label');
+
+    let mainInterval;
+    let bidInfoInterval;
+
+    // Image gallery functionality
+    function changeMainImage(imageUrl, thumbnailElement) {
+        const mainImage = document.getElementById('mainImage');
+        if (mainImage) {
+            mainImage.src = imageUrl;
+        }
+
+        // Update active thumbnail
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        thumbnails.forEach(thumb => thumb.classList.remove('active'));
+        thumbnailElement.classList.add('active');
+    }
+
+    function mainUpdateLoop() {
+        const now = new Date().getTime();
+        const distance = auctionEndTime - now;
+
+        if (auctionStatus !== 'ACTIVE' || distance < 0) {
+            countdownElement.innerHTML = (auctionStatus === 'PENDING') ? "Auction awaiting approval" : "AUCTION ENDED";
+            countdownElement.classList.add(auctionStatus === 'PENDING' ? 'countdown-pending' : 'countdown-ended');
+            if (formContainer) formContainer.innerHTML = '';
+            if (mainInterval) clearInterval(mainInterval);
+            if (bidInfoInterval) clearInterval(bidInfoInterval);
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        countdownElement.innerHTML = `Time Left: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    function fetchAndUpdateBidInfo() {
+        if (!isAuthenticated) {
+            priceLabelElement.textContent = 'Starting Price';
+            priceElement.textContent = formattedStartPrice;
+            bidderNameElement.textContent = '';
+            formContainer.innerHTML = `<p class="login-prompt">Please log in as a buyer to place a bid.</p>`;
+            return;
+        }
+
+        if (auctionStatus === 'PENDING') {
+            priceLabelElement.textContent = 'Starting Price';
+            priceElement.textContent = formattedStartPrice;
+            formContainer.innerHTML = `<p class="login-prompt">This auction is pending approval and will start soon.</p>`;
+            return;
+        }
+
+        fetch(`/api/auctions/${auctionId}/highest-bid`)
+            .then(response => response.json())
+            .then(data => {
+                priceLabelElement.textContent = 'Current Bid';
+                priceElement.textContent = '$' + data.amount.toFixed(2);
+                bidderNameElement.textContent = 'Highest Bid by: ' + data.bidderName;
+
+                const now = new Date().getTime();
+                const distance = auctionEndTime - now;
+                const isAuctionActive = (auctionStatus === 'ACTIVE' && distance > 0);
+
+                if (isAuctionActive) {
+                    if (isBuyer) {
+                        if (data.isCurrentUserHighestBidder) {
+                            formContainer.innerHTML = `<p style="text-align:center; color:green; font-weight:bold;">You are the highest bidder!</p>`;
+                        } else {
+                            formContainer.innerHTML = `
+                                    <form action="/api/bids" method="post" class="bid-form">
+                                        <input type="hidden" name="auctionId" value="${auctionId}" />
+                                        <div>
+                                            <label for="amount">Your Bid ($):</label>
+                                            <input type="number" id="amount" name="amount" step="0.01" min="${(data.amount + 0.01).toFixed(2)}" required placeholder="${(data.amount + 0.01).toFixed(2)}" />
+                                        </div>
+                                        <button type="submit">Place Your Bid</button>
+                                    </form>
+                                `;
+                        }
+                    } else if (isSellerViewingOwn) {
+                        formContainer.innerHTML = `<p class="login-prompt">You are viewing your own auction.</p>`;
+                    } else {
+                        formContainer.innerHTML = `<p class="login-prompt">Only users with a buyer role can place bids.</p>`;
+                    }
+                } else {
+                    formContainer.innerHTML = '';
+                }
+            })
+            .catch(error => {
+                priceLabelElement.textContent = 'Starting Price';
+                priceElement.textContent = formattedStartPrice;
+                bidderNameElement.textContent = '';
+                formContainer.innerHTML = `<p style="color:red; text-align:center;">Error loading bid information.</p>`;
+            });
+    }
+
+    if (auctionStatus === 'PENDING') {
+        countdownElement.innerHTML = "Auction awaiting approval";
+        countdownElement.classList.add('countdown-pending');
+        priceElement.textContent = formattedStartPrice;
+        formContainer.innerHTML = `<p class="login-prompt">This auction is pending approval and will start soon.</p>`;
+    } else {
+        fetchAndUpdateBidInfo();
+        mainUpdateLoop();
+        mainInterval = setInterval(mainUpdateLoop, 1000);
+
+        if (isAuthenticated) {
+            bidInfoInterval = setInterval(fetchAndUpdateBidInfo, 10000);
+        }
+    }
+</script>
+</body>
+</html>

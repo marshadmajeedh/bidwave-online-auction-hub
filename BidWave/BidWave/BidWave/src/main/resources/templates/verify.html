@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Account Verified - BidWave</title>
+  <!-- Google Fonts Import -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0A0908;
+      --dark-blue: #22333B;
+      --off-white: #EAE0D5;
+      --tan: #C6AC8E;
+      --taupe: #5E503F;
+      --heading-font: 'Yuji Syuku', serif;
+      --body-font: 'Lato', sans-serif;
+    }
+    body {
+      font-family: var(--body-font);
+      background-color: var(--dark-blue);
+      color: var(--dark-blue);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: var(--off-white);
+      padding: 3em;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+      animation: fadeIn 0.5s ease-out;
+    }
+    .checkmark-container {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1em;
+    }
+    .checkmark-svg {
+      width: 100%;
+      height: 100%;
+    }
+    .checkmark-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 2;
+      stroke-miterlimit: 10;
+      stroke: #166534;
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    .checkmark-check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      stroke-width: 3;
+      stroke: #166534;
+      fill: none;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+    }
+    h2 {
+      font-family: var(--heading-font);
+      font-size: 2.2em;
+      color: var(--black);
+      margin-bottom: 0.5em;
+    }
+    p {
+      color: var(--taupe);
+      font-size: 1.1em;
+      margin-bottom: 2em;
+    }
+    .login-button {
+      display: inline-block;
+      width: 100%;
+      padding: 12px;
+      font-size: 1.1em;
+      font-weight: bold;
+      background-color: var(--dark-blue);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      box-sizing: border-box;
+      transition: background-color 0.2s ease;
+    }
+    .login-button:hover {
+      background-color: var(--taupe);
+    }
+    @keyframes stroke {
+      100% { stroke-dashoffset: 0; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="checkmark-container">
+    <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+      <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+      <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+    </svg>
+  </div>
+  <h2>Account Verified!</h2>
+  <p>Your account has been successfully verified. You can now log in to start bidding and selling.</p>
+  <a th:href="@{/login}" class="login-button">Proceed to Login</a>
+</div>
+</body>
+</html>

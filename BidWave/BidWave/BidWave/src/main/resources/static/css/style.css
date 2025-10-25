@@ -1,0 +1,239 @@
+/* ===============================
+   🔔 Notification Bell & Panel - FIXED VERSION
+   =============================== */
+.notification-container {
+    position: relative;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+/* Make sure the bell icon is the only clickable element */
+#notification-bell {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    background: transparent;
+    border: none;
+    position: relative;
+    z-index: 1002;
+}
+
+#notification-bell:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.bell-icon {
+    width: 22px !important;
+    height: 22px !important;
+    cursor: pointer;
+    fill: var(--dark-blue);
+    transition: transform 0.2s ease;
+}
+
+.bell-icon:hover {
+    transform: scale(1.1);
+}
+
+.bell-icon.unread {
+    fill: var(--danger) !important;
+}
+
+/* Small red badge */
+.notification-count {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.7em;
+    font-weight: bold;
+    display: none;
+    z-index: 1003;
+    min-width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 14px;
+}
+
+/* Dropdown panel - positioned below bell without moving it */
+.notification-panel {
+    position: absolute;
+    top: 100%; /* This positions it right below the bell */
+    right: 0;
+    width: 380px;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #e6e9ee;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    display: none;
+    z-index: 1001;
+    animation: slideDown 0.2s ease-out;
+    margin-top: 8px; /* Small gap between bell and panel */
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #eef2f6;
+    background-color: #f9fafb;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.notification-header h4 {
+    margin: 0;
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--dark-blue);
+}
+
+.notification-actions a {
+    font-size: 0.8em;
+    margin-left: 10px;
+    color: var(--dark-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.notification-actions a:hover {
+    text-decoration: underline;
+    color: var(--taupe);
+}
+
+.notification-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.notification-item {
+    position: relative;
+    padding: 12px 15px;
+    border-bottom: 1px solid #f3f6f9;
+    text-align: left;
+    transition: all 0.2s ease;
+    padding-right: 60px;
+}
+
+.notification-item:hover {
+    background-color: #f8fafc;
+}
+
+.notification-item.unread {
+    background-color: #f0f5ff;
+    border-left: 3px solid var(--dark-blue);
+}
+
+.notification-item p {
+    margin: 0;
+    font-size: 0.9em;
+    color: var(--dark-blue);
+    line-height: 1.4;
+}
+
+.notification-item small {
+    color: #667085;
+    font-size: 0.75em;
+    margin-top: 4px;
+    display: block;
+}
+
+.empty-notifications {
+    padding: 40px 20px;
+    text-align: center;
+    color: #a0aec0;
+}
+
+/* Notification item actions */
+.notification-item-actions {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 12px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.notification-item:hover .notification-item-actions {
+    opacity: 1;
+}
+
+.item-action-btn {
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 16px;
+    color: var(--taupe);
+    font-weight: bold;
+}
+
+.item-action-btn:hover {
+    transform: scale(1.1);
+    color: var(--dark-blue);
+}
+
+.read-btn {
+    color: var(--success);
+}
+
+.read-btn:hover {
+    color: #059669;
+}
+
+.delete-btn {
+    color: var(--danger);
+}
+
+.delete-btn:hover {
+    color: #dc2626;
+}
+
+/* Add this to your existing CSS to ensure proper header layout */
+header nav {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 1rem 2rem !important;
+    background: white !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    position: relative;
+    z-index: 1001;
+}
+
+.user-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    position: relative;
+}

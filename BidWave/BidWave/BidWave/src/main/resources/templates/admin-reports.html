@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Auction Reports - BidWave</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --black: #0A0908;
+            --dark-blue: #22333B;
+            --off-white: #EAE0D5;
+            --tan: #C6AC8E;
+            --taupe: #5E503F;
+            --heading-font: 'Yuji Syuku', serif;
+            --body-font: 'Lato', sans-serif;
+        }
+
+        body {
+            font-family: var(--body-font);
+            background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%);
+            color: #374151;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Main Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1em 2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: none;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-links a, .user-actions a {
+            margin: 0 1em;
+            font-size: 1.1em;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ffffff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links .logo {
+            font-family: var(--heading-font);
+            font-size: 1.8em;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #8B5CF6 0%, #4F46E5 100%);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+            background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%);
+            text-decoration: none;
+        }
+
+        a { text-decoration: none; }
+
+        /* Main Dashboard Container */
+        .dashboard-container {
+            padding: 2em;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .dashboard-header {
+            font-family: var(--heading-font);
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1em;
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Content Card */
+        .content-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 2em;
+            margin-bottom: 2em;
+            animation: scaleIn 0.6s ease-out 0.2s both;
+            transition: all 0.3s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .content-card:hover {
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        /* Data Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1em;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1em 1.5em;
+            text-align: left;
+            font-weight: 700;
+            font-family: var(--body-font);
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .data-table th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        .data-table td {
+            padding: 1.2em 1.5em;
+            border-bottom: 1px solid #e5e7eb;
+            font-family: var(--body-font);
+            color: #4b5563;
+            transition: all 0.3s ease;
+        }
+
+        .data-table tbody tr {
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+            transition: all 0.3s ease;
+        }
+
+        .data-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        .data-table tbody tr:nth-child(2) { animation-delay: 0.15s; }
+        .data-table tbody tr:nth-child(3) { animation-delay: 0.2s; }
+        .data-table tbody tr:nth-child(4) { animation-delay: 0.25s; }
+        .data-table tbody tr:nth-child(5) { animation-delay: 0.3s; }
+        .data-table tbody tr:nth-child(6) { animation-delay: 0.35s; }
+        .data-table tbody tr:nth-child(7) { animation-delay: 0.4s; }
+        .data-table tbody tr:nth-child(8) { animation-delay: 0.45s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .data-table tr:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-family: var(--body-font);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .btn-report {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-report:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-report:active {
+            animation: buttonPress 0.2s ease;
+        }
+
+        @keyframes buttonPress {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.95);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4em 3em;
+            color: #6b7280;
+            font-family: var(--body-font);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .empty-state h3 {
+            font-family: var(--heading-font);
+            font-size: 2em;
+            margin-bottom: 0.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+            color: #9ca3af;
+        }
+
+        /* Empty state icon animation */
+        .empty-state::before {
+            content: '📊';
+            display: block;
+            font-size: 4em;
+            margin-bottom: 0.3em;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1em;
+            }
+
+            .content-card {
+                padding: 1em;
+                overflow-x: auto;
+            }
+
+            .data-table {
+                font-size: 0.9em;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.75em 0.5em;
+            }
+
+            .dashboard-header {
+                font-size: 2em;
+            }
+        }
+
+        /* Highlight animation for amounts */
+        .data-table td:nth-child(4) {
+            font-weight: 600;
+            color: #4F46E5;
+        }
+
+        /* Shine effect on hover */
+        .btn-report::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-report {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-report:hover::before {
+            left: 100%;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<main class="dashboard-container">
+    <h1 class="dashboard-header">Generated Auction Reports</h1>
+
+    <div class="content-card">
+        <div th:if="${#lists.isEmpty(reports)}" class="empty-state">
+            <h3>No Reports Generated Yet</h3>
+            <p>When auctions are completed and finalized, reports will appear here.</p>
+        </div>
+
+        <table th:unless="${#lists.isEmpty(reports)}" class="data-table">
+            <thead>
+            <tr>
+                <th>Report ID</th>
+                <th>Auction Item</th>
+                <th>Winner</th>
+                <th>Final Amount</th>
+                <th>Generated On</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="report : ${reports}">
+                <td th:text="${report.reportId}"></td>
+                <td th:text="${report.auction.itemName}"></td>
+                <td th:text="${report.winner.firstName + ' ' + report.winner.lastName}"></td>
+                <td th:text="'$' + ${#numbers.formatDecimal(report.finalBidAmount, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td th:text="${#temporals.format(report.generatedDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                    <a th:href="@{/api/admin/reports/{id}/download(id=${report.reportId})}"
+                       class="action-btn btn-report"
+                       target="_blank">Download PDF</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>
