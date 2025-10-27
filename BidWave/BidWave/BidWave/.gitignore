@@ -62,3 +62,7 @@ hs_err_pid*
 # IDE specific files
 .idea/
 .settings/
+
+# In .gitignore
+**/application.properties
+**/config/application-*.properties

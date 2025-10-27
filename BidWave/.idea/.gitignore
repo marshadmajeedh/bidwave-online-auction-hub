@@ -42,3 +42,7 @@ hs_err_pid*
 .classpath
 .project
 .settings/
+
+# In .gitignore
+**/application.properties
+**/config/application-*.properties
